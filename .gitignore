@@ -1,0 +1,5 @@
+#-----OS GENERATED FILES-----#
+*.DS_Store
+
+#-----oi oi no looking-----#
+*.env
