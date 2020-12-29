@@ -25,32 +25,39 @@ const SMMO_apiKey = process.env.SMMO_TOKEN,
 bot.login(DC_TOKEN);
 
 // make a HTTP POST request to SMMO
-let fuck = () => {
-    axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
-        .then(res => {
-            return new Promise((resolve, reject) => {
-                let now = new Date().getTime(); // current time
-                for(boss of res.data){
-                    // note that enable_time is in seconds and now is in miliseconds
-                    // check to see if there's a boss within the next hour
-                    if(boss.enable_time - (now/1000) > 0){
-                        resolve(boss.name);
-                    }
-                }
-                reject("no bossess attackable soon");
-            })
+axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
+    .then(res => {
+        return new Promise((resolve, reject) => {
+            let now = new Date().getTime(); // current time
+            const bosses_time = res.data
+                .filter(boss => boss.enable_time <= 3600)
+                .map(boss => boss.enable_time);
+            //console.log(bosses_time);
+            let bosses_attack = bosses_time.filter(time => time > 0);
+            //console.log(bosses_attack);
+            if(bosses_attack.length != 0){
+                bosses_attack = bosses_attack.sort();
+                resolve((bosses_attack[0] * 1000) - now);
+            }
+            reject("no bossess attackable soon");
         })
-        .then(b => {
-            // okay, I honestly don't know how to not put a promise inside
-            // another promise. But hey, it's working.
+    })
+    .then(time => {
+        // okay, I honestly don't know how to not put a promise inside
+        // another promise. But hey, it's working.
+        setTimeout(() => {
             bot.channels.fetch("791497108351615049")
-              .then(channel => channel.send(
-                  `${b} will be attackable soon`
-              ))
+                .then(channel => {
+                    channel.send(`<@&793438432646135808> WB attaackable now`)
+                    // channel.send(`<@${channel.server.roles.get("tester")}> WB attaackable now`)
+                    // console.log()
+                })
               .catch(err => console.log(err));
-        })
-        .catch(err => console.log(err));
-}
+        }, time - 5000)
+    })
+    .catch(err => console.log(err));
 
 
-//setInterval(fuck, 3600000);
+
+// setInterval(wbPing(), 3600000);
+// wbPing();
