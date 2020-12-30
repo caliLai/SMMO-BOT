@@ -23,7 +23,7 @@
 //----- MODULES-----//
 require("dotenv").config();
 const axios = require("axios"),
-Discord = require("discord.js"),
+Discord = require("discord.js");
 // smmoHandler = require("./SMMO_handler.js");
 // dcHandler = require("./DC_handler.js");
 
@@ -68,7 +68,7 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
                     // console.log()
                 })
               .catch(err => console.log(err));
-        }, time - 300000)
+        }, 3000)
     })
     .then(() => {
         setTimeout(() => {
@@ -79,7 +79,7 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
                     // console.log()
                 })
               .catch(err => console.log(err));
-        }, 60000)
+        }, 300000)
     })
     .catch(err => console.log(err));
 
