@@ -8,10 +8,12 @@
 ***/
 
 require("dotenv").config();
+
 //----- MODULES-----//
 const axios = require("axios"),
 Discord = require("discord.js"),
-smmo = require("./SMMO_handler.js");
+smmoHandler = require("./SMMO_handler.js");
+dcHandler = require("./DC_handler.js");
 
 //-----IDK MAN-----//
 const bot = new Discord.Client();
@@ -45,8 +47,7 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
         })
     })
     .then(time => {
-        // okay, I honestly don't know how to not put a promise inside
-        // another promise. But hey, it's working.
+        // dcHandler.countDown(time, "791497108351615049", "793438432646135808");
         setTimeout(() => {
             bot.channels.fetch("791497108351615049")
                 .then(channel => {
