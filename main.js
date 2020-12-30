@@ -28,16 +28,18 @@ bot.login(DC_TOKEN);
 axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
     .then(res => {
         return new Promise((resolve, reject) => {
-            let now = new Date().getTime(); // current time
-            const bosses_time = res.data
-                .filter(boss => boss.enable_time <= 3600)
+            let now = new Date().getTime(); // current time\
+            // console.log(res.data)
+            let bosses_time = res.data
+                .filter(boss => boss.enable_time - (now/1000)<= 14400)
                 .map(boss => boss.enable_time);
+            //console.log(res.data.filter(boss => boss.enable_time - (now/1000) <= 14400))
             //console.log(bosses_time);
-            let bosses_attack = bosses_time.filter(time => time > 0);
+            //let bosses_attack = bosses_time.filter(time => time > 0);
             //console.log(bosses_attack);
-            if(bosses_attack.length != 0){
-                bosses_attack = bosses_attack.sort();
-                resolve((bosses_attack[0] * 1000) - now);
+            if(bosses_time.length != 0){
+                bosses_time = bosses_time.sort();
+                resolve((bosses_time[0] * 1000) - now);
             }
             reject("no bossess attackable soon");
         })
@@ -53,7 +55,7 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
                     // console.log()
                 })
               .catch(err => console.log(err));
-        }, time - 5000)
+        }, 3000)
     })
     .catch(err => console.log(err));
 
