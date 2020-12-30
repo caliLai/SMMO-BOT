@@ -1,3 +1,15 @@
+/*****************************************************************
+    PROJECT:
+        SMMO-BOT
+    DESCRIPTION:
+        SMMO-BOT is a Discord bot made to ping players 5 minutes before a
+        world boss is attackable. The world boss is applicable to the game
+        "SimpleMMO".
+
+    Developed by Calista Lai
+    Dec 2020
+    Send me coffee pls
+*****************************************************************/
 /***
     SMMO-BOT is a Discord bot made to ping players 5 minutes before a world
     boss is attackable. The world boss is applicable to the game "SimpleMMO".
@@ -7,17 +19,19 @@
     I have no damn clue what I'm doing
 ***/
 
-require("dotenv").config();
+
 //----- MODULES-----//
+require("dotenv").config();
 const axios = require("axios"),
 Discord = require("discord.js"),
-smmo = require("./SMMO_handler.js");
+// smmoHandler = require("./SMMO_handler.js");
+// dcHandler = require("./DC_handler.js");
 
-//-----IDK MAN-----//
+//-----DC STUFF-----//
 const bot = new Discord.Client();
 const DC_TOKEN = process.env.DC_TOKEN;
 
-//------API STUFF-----//
+//------SMMO STUFF-----//
 const SMMO_apiKey = process.env.SMMO_TOKEN,
     SMMO_wbURL = "https://api.simple-mmo.com/v1/worldboss/all";
 
@@ -45,8 +59,18 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
         })
     })
     .then(time => {
-        // okay, I honestly don't know how to not put a promise inside
-        // another promise. But hey, it's working.
+        // dcHandler.countDown(time, "791497108351615049", "793438432646135808");
+        setTimeout(() => {
+            bot.channels.fetch("791497108351615049")
+                .then(channel => {
+                    channel.send(`<@&793438432646135808> WB in 5 mins`)
+                    // channel.send(`<@${channel.server.roles.get("tester")}> WB attaackable now`)
+                    // console.log()
+                })
+              .catch(err => console.log(err));
+        }, time - 300000)
+    })
+    .then(() => {
         setTimeout(() => {
             bot.channels.fetch("791497108351615049")
                 .then(channel => {
@@ -55,7 +79,7 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
                     // console.log()
                 })
               .catch(err => console.log(err));
-        }, 3000)
+        }, 60000)
     })
     .catch(err => console.log(err));
 
