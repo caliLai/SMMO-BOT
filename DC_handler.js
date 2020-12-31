@@ -2,7 +2,7 @@
     PROJECT:
         SMMO-BOT
     DESCRIPTION:
-        Module for any functions related to the SMMO side of things
+        Module for any functions related to the DC side of things
 
     Developed by Calista Lai
     Dec 2020
@@ -13,16 +13,18 @@ Discord = require("discord.js");
 const bot = new Discord.Client();
 const DC_TOKEN = process.env.DC_TOKEN;
 
-const countDown = (time, channel, role) => {
+bot.login(DC_TOKEN);
+
+const countDown = (time, channel, role, m) => {
     setTimeout(() => {
-        bot.channels.fetch(`${channel}`)
+        bot.channels.fetch(channel)
             .then(channel => {
-                channel.send(`<@&${role}> WB attaackable now`)
+                channel.send(`<@&${role}> ${m}`)
                 // channel.send(`<@${channel.server.roles.get("tester")}> WB attaackable now`)
                 // console.log()
             })
           .catch(err => console.log(err));
-    }, 3000)
+    }, time)
 }
 
 module.exports = {
