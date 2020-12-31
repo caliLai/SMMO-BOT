@@ -6,18 +6,12 @@
         world boss is attackable. The world boss is applicable to the game
         "SimpleMMO".
 
-    Developed by Calista Lai
-    Dec 2020
-    Send me coffee pls
-*****************************************************************/
-/***
-    SMMO-BOT is a Discord bot made to ping players 5 minutes before a world
-    boss is attackable. The world boss is applicable to the game "SimpleMMO".
+        APIs used: discord client and SMMO API
 
     Developed by Calista Lai
-    Dec 2020
-    I have no damn clue what I'm doing
-***/
+    Dec 2020 / Jan 2021
+    Send me coffee pls
+*****************************************************************/
 
 
 //----- MODULES-----//
@@ -45,7 +39,8 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
             let now = new Date().getTime(); // current time\
             // console.log(res.data)
             let bosses_time = res.data
-                .filter(boss => boss.enable_time - (now/1000)<= 14400)
+                // filter bosses attackale in next hour
+                .filter(boss => boss.enable_time - (now/1000)<= 3600)
                 .map(boss => boss.enable_time);
             //console.log(res.data.filter(boss => boss.enable_time - (now/1000) <= 14400))
             //console.log(bosses_time);
