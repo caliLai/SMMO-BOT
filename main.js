@@ -6,76 +6,104 @@
         world boss is attackable. The world boss is applicable to the game
         "SimpleMMO".
 
-        APIs used: discord client and SMMO API
-
     Developed by Calista Lai
-    Dec 2020 / Jan 2021
+    Dec 2020
     Send me coffee pls
 *****************************************************************/
+/***
+    SMMO-BOT is a Discord bot made to ping players 5 minutes before a world
+    boss is attackable. The world boss is applicable to the game "SimpleMMO".
+
+    Developed by Calista Lai
+    Dec 2020
+    I have no damn clue what I'm doing
+***/
 
 
 //----- MODULES-----//
 require("dotenv").config();
 const axios = require("axios"),
-Discord = require("discord.js");
-// smmoHandler = require("./SMMO_handler.js");
-// dcHandler = require("./DC_handler.js");
+// Discord = require("discord.js"),
+smmoHandler = require("./SMMO_handler.js");
+dcHandler = require("./DC_handler.js");
 
 //-----DC STUFF-----//
-const bot = new Discord.Client();
-const DC_TOKEN = process.env.DC_TOKEN;
+// const bot = new Discord.Client();
+// const DC_TOKEN = process.env.DC_TOKEN;
 
 //------SMMO STUFF-----//
 const SMMO_apiKey = process.env.SMMO_TOKEN,
     SMMO_wbURL = "https://api.simple-mmo.com/v1/worldboss/all";
 
 //-----OH BOY, FUN STUFF STARTS HERE-----//
-bot.login(DC_TOKEN);
+// bot.login(DC_TOKEN);
 
 // make a HTTP POST request to SMMO
 axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
     .then(res => {
+        console.log(res.data);
         return new Promise((resolve, reject) => {
             let now = new Date().getTime(); // current time\
             // console.log(res.data)
             let bosses_time = res.data
-                // filter bosses attackale in next hour
-                .filter(boss => boss.enable_time - (now/1000)<= 3600)
-                .map(boss => boss.enable_time);
+                // .filter(boss => boss.enable_time - (now/1000) > 3600)
+                .filter(boss => boss.enable_time - (now/1000) <= 3600)
+                .map(boss => boss.enable_time - (now/1000));
             //console.log(res.data.filter(boss => boss.enable_time - (now/1000) <= 14400))
             //console.log(bosses_time);
             //let bosses_attack = bosses_time.filter(time => time > 0);
             //console.log(bosses_attack);
             if(bosses_time.length != 0){
                 bosses_time = bosses_time.sort();
-                resolve((bosses_time[0] * 1000) - now);
+                resolve(bosses_time);
+                // resolve([60, 120]);
             }
             reject("no bossess attackable soon");
         })
     })
-    .then(time => {
-        // dcHandler.countDown(time, "791497108351615049", "793438432646135808");
-        setTimeout(() => {
-            bot.channels.fetch("791497108351615049")
-                .then(channel => {
-                    channel.send(`<@&793438432646135808> WB in 5 mins`)
-                    // channel.send(`<@${channel.server.roles.get("tester")}> WB attaackable now`)
-                    // console.log()
-                })
-              .catch(err => console.log(err));
-        }, 3000)
+    .then(times => {
+        const newTimes = times.map(time => {
+            //let t = time;
+            if (time <= 300){
+                return time;
+            }
+            return time - 300;
+        })
+
+        for(time of newTimes){
+            dcHandler.countDown(
+                //time * 1000,
+                1000,
+                "791497108351615049",
+                "793438432646135808",
+                `WB in ${parseInt(time/60)} mins`);
+        }
+        // setTimeout(() => {
+        //     bot.channels.fetch("791497108351615049")
+        //         .then(channel => {
+        //             channel.send(`<@&793438432646135808> WB in 5 mins`)
+        //             // channel.send(`<@${channel.server.roles.get("tester")}> WB attaackable now`)
+        //             // console.log()
+        //         })
+        //       .catch(err => console.log(err));
+        // }, time - 300000)
     })
-    .then(() => {
-        setTimeout(() => {
-            bot.channels.fetch("791497108351615049")
-                .then(channel => {
-                    channel.send(`<@&793438432646135808> WB attaackable now`)
-                    // channel.send(`<@${channel.server.roles.get("tester")}> WB attaackable now`)
-                    // console.log()
-                })
-              .catch(err => console.log(err));
-        }, 300000)
-    })
+    // .then(() => {
+    //     dcHandler.countDown(
+    //         60000,
+    //         "791497108351615049",
+    //         "793438432646135808",
+    //         "WB attackable now");
+    //     // setTimeout(() => {
+    //     //     bot.channels.fetch("791497108351615049")
+    //     //         .then(channel => {
+    //     //             channel.send(`<@&793438432646135808> WB attaackable now`)
+    //     //             // channel.send(`<@${channel.server.roles.get("tester")}> WB attaackable now`)
+    //     //             // console.log()
+    //     //         })
+    //     //       .catch(err => console.log(err));
+    //     // }, 60000)
+    // })
     .catch(err => console.log(err));
 
 
