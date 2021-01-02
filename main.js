@@ -41,12 +41,14 @@ const SMMO_apiKey = process.env.SMMO_TOKEN,
 // make a HTTP POST request to SMMO
 axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
     .then(res => {
+        console.log(res.data);
         return new Promise((resolve, reject) => {
             let now = new Date().getTime(); // current time\
             // console.log(res.data)
             let bosses_time = res.data
+                // .filter(boss => boss.enable_time - (now/1000) > 3600)
                 .filter(boss => boss.enable_time - (now/1000) <= 3600)
-                .map(boss => boss.enable_time);
+                .map(boss => boss.enable_time - (now/1000));
             //console.log(res.data.filter(boss => boss.enable_time - (now/1000) <= 14400))
             //console.log(bosses_time);
             //let bosses_attack = bosses_time.filter(time => time > 0);
@@ -61,19 +63,20 @@ axios.post(SMMO_wbURL, {api_key: SMMO_apiKey})
     })
     .then(times => {
         const newTimes = times.map(time => {
-            let t = time;
-            if (t <= 300){
-                return t;
+            //let t = time;
+            if (time <= 300){
+                return time;
             }
-            return t - 300;
+            return time - 300;
         })
 
         for(time of newTimes){
             dcHandler.countDown(
-                time * 1000,
+                //time * 1000,
+                1000,
                 "791497108351615049",
                 "793438432646135808",
-                "WB in 5 mins");
+                `WB in ${parseInt(time/60)} mins`);
         }
         // setTimeout(() => {
         //     bot.channels.fetch("791497108351615049")
