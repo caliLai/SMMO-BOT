@@ -59,8 +59,8 @@ const wbPing = () => {
 
             for(time of newTimes){
                 dcHandler.countDown(
-                    //time * 1000,
-                    1000,
+                    time * 1000,
+                    // 1000,
                     "791497108351615049",
                     "793438432646135808",
                     `WB in ${parseInt(time/60)} mins`);
